@@ -155,7 +155,7 @@ t_big_range() {
 # ---------------------------------------------------------------- paths
 
 t_traversal() { [ "$(code --path-as-is "$URL/../../../../etc/passwd")" = 400 ]; }
-t_traversal_encoded() { [ "$(code "$URL/%2e%2e/%2e%2e/%2e%2e/etc/passwd")" = 400 ]; }
+t_traversal_encoded() { [ "$(code --path-as-is "$URL/%2e%2e/%2e%2e/%2e%2e/etc/passwd")" = 400 ]; }
 t_symlink_escape() { [ "$(code "$URL/escape/hosts")" = 403 ]; }
 t_symlink_inside() { [ "$(curl -s "$URL/link.txt")" = hello ]; }
 t_dir_redirect() {
