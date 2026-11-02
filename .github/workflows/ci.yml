@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / ${{ matrix.cc }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, cc: gcc }
+          - { os: ubuntu-latest, cc: clang }
+          - { os: macos-latest, cc: clang }
+    env:
+      CC: ${{ matrix.cc }}
+    steps:
+      - uses: actions/checkout@v5
+      # Older sanitizer runtimes crash with the 32-bit mmap ASLR some runner kernels use.
+      - if: runner.os == 'Linux'
+        run: sudo sysctl -w vm.mmap_rnd_bits=28
+      - name: Build
+        run: make
+      - name: Unit and integration tests
+        run: make test
+      - name: Tests under AddressSanitizer + UndefinedBehaviorSanitizer
+        run: make asan
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: sudo sysctl -w vm.mmap_rnd_bits=28
+      - name: Fuzz the request parser for 60 seconds
+        run: make fuzz FUZZ_SECONDS=60

@@ -1,0 +1,9 @@
+/build/
+*.o
+*.d
+*.a
+*.dSYM/
+crash-*
+leak-*
+timeout-*
+oom-*
